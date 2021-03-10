@@ -47,11 +47,11 @@ class ApiController extends AbstractController
     public function test() : Response
     {
         return $this->json([
-            'message' => 'You are authorize to use this API !',
+            'message'   => 'You can use this API !',
             'firstname' => $this->user->getFirstname(),
-            'lastname' => $this->user->getLastname(),
-            'email' => $this->user->getEmail(),
-            'Token' => $this->user->getApiToken()
+            'lastname'  => $this->user->getLastname(),
+            'email'     => $this->user->getEmail(),
+            'Token'     => $this->user->getApiToken()
         ]);
     }
 }
