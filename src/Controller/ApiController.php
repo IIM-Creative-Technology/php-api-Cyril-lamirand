@@ -38,7 +38,7 @@ class ApiController extends AbstractController
         if (!$user instanceof User) {
             throw new HttpException(401, 'Unauthorized');
         }
-        
+
         $this->user = $user;
     }
     /**
@@ -47,7 +47,11 @@ class ApiController extends AbstractController
     public function test() : Response
     {
         return $this->json([
-            'message' => 'test!'
+            'message' => 'You are authorize to use this API !',
+            'firstname' => $this->user->getFirstname(),
+            'lastname' => $this->user->getLastname(),
+            'email' => $this->user->getEmail(),
+            'Token' => $this->user->getApiToken()
         ]);
     }
 }
