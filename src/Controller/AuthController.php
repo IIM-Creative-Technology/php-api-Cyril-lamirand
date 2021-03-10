@@ -24,7 +24,6 @@ class AuthController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("/auth/register", name="register", methods={"POST"})
      * @param Request $request
@@ -43,6 +42,14 @@ class AuthController extends AbstractController
         $user->setEmail($email);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
+
+        $payload = [
+            "user" => $user->getUsername(),
+            "exp"  => (new \DateTime())->modify("+5 minutes")->getTimestamp(),
+        ];
+        $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
+
+        $user->setApiToken($jwt);
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($user);
@@ -72,15 +79,9 @@ class AuthController extends AbstractController
             ]);
         }
 
-        $payload = [
-            "user" => $user->getUsername(),
-            "exp"  => (new \DateTime())->modify("+5 minutes")->getTimestamp(),
-        ];
-
-        $jwt = JWT::encode($payload, $this->getParameter('jwt_secret'), 'HS256');
         return $this->json([
-            'message' => 'success!',
-            'token' => sprintf('Bearer %s', $jwt),
+            'message' => 'Authentification Ok !',
+            'api_token' => $user->getApiToken()
         ]);
     }
 }
