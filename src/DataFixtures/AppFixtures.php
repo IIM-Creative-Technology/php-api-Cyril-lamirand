@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Classroom;
 use App\Entity\Course;
 use App\Entity\Promotion;
+use App\Entity\Result;
 use App\Entity\Student;
 use App\Entity\Teacher;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -73,6 +74,14 @@ class AppFixtures extends Fixture
         $course->setClassroom($classroom);
         $course->setPromotion($promotion);
         return $course;
+    }
+
+    public function setResults($student, $course) {
+        $result = new Result();
+        $result->setStudent($student);
+        $result->setCourse($course);
+        $result->setScore(rand(0,20));
+        return $result;
     }
 
 
@@ -307,21 +316,50 @@ class AppFixtures extends Fixture
         }
         $manager->flush();
 
+        $studentRepository = $manager->getRepository('App:Student')->findAll();
+
         /**
          * Teachers : Fixtures
          * App\Entity\Teacher
          */
         $teachers = [
-            1  => ["firstname" => "Margaret", "lastname" => "Bruner",    "entry_date" => new \DateTime('05-08-2021')], // PHP
-            2  => ["firstname" => "Jennifer", "lastname" => "Thomson",   "entry_date" => new \DateTime('12-08-2021')], // JS
-            3  => ["firstname" => "Bobby",    "lastname" => "Charlton",  "entry_date" => new \DateTime('17-08-2021')], // Swift
-            4  => ["firstname" => "Clint",    "lastname" => "Hennessey", "entry_date" => new \DateTime('20-08-2021')], // Photoshop
-            5  => ["firstname" => "Dani",     "lastname" => "Dotson",    "entry_date" => new \DateTime('26-08-2021')], // Illustrator
-            6  => ["firstname" => "Jason",    "lastname" => "Lehman",    "entry_date" => new \DateTime('22-08-2021')], // InDesign
-            7  => ["firstname" => "Ray",      "lastname" => "Marquez",   "entry_date" => new \DateTime('08-08-2021')], // 3DS Max
-            8  => ["firstname" => "Jewel",    "lastname" => "Bowman",    "entry_date" => new \DateTime('10-08-2021')], // Sketch Up
-            9  => ["firstname" => "Helen",    "lastname" => "Berry",     "entry_date" => new \DateTime('19-08-2021')], // 3D Slash
-            10 => ["firstname" => "Richard",  "lastname" => "Taylor",    "entry_date" => new \DateTime('23-08-2021')], // Découverte A1
+            1  => ["firstname" => "Margaret",    "lastname" => "Bruner",    "entry_date" => new \DateTime('05-08-2021')], // A2 - PHP
+            2  => ["firstname" => "Jennifer",    "lastname" => "Thomson",   "entry_date" => new \DateTime('12-08-2021')], // A2 - JS
+            3  => ["firstname" => "Bobby",       "lastname" => "Charlton",  "entry_date" => new \DateTime('17-08-2021')], // A2 - Swift
+            4  => ["firstname" => "Clint",       "lastname" => "Hennessey", "entry_date" => new \DateTime('20-08-2021')], // A2 - Photoshop
+            5  => ["firstname" => "Dani",        "lastname" => "Dotson",    "entry_date" => new \DateTime('26-08-2021')], // A2 - Illustrator
+            6  => ["firstname" => "Jason",       "lastname" => "Lehman",    "entry_date" => new \DateTime('22-08-2021')], // A2 - InDesign
+            7  => ["firstname" => "Ray",         "lastname" => "Marquez",   "entry_date" => new \DateTime('08-08-2021')], // A2 - 3DS Max
+            8  => ["firstname" => "Jewel",       "lastname" => "Bowman",    "entry_date" => new \DateTime('10-08-2021')], // A2 - Sketch Up
+            9  => ["firstname" => "Helen",       "lastname" => "Berry",     "entry_date" => new \DateTime('19-08-2021')], // A2 - 3D Slash
+            10 => ["firstname" => "Richard",     "lastname" => "Taylor",    "entry_date" => new \DateTime('23-08-2021')], // Découverte A1
+            11 => ["firstname" => "Adrienne",    "lastname" => "Wysocki",   "entry_date" => new \DateTime('07-08-2021')], // A3 - PHP
+            12 => ["firstname" => "Felix",       "lastname" => "Smith",     "entry_date" => new \DateTime('20-08-2021')], // A3 - JS
+            13 => ["firstname" => "Andrew",      "lastname" => "Davis",     "entry_date" => new \DateTime('21-08-2021')], // A3 - SWIFT
+            14 => ["firstname" => "Wayne",       "lastname" => "Mackey",    "entry_date" => new \DateTime('03-08-2021')], // A3 - PS
+            15 => ["firstname" => "Michael",     "lastname" => "Tye",       "entry_date" => new \DateTime('13-08-2021')], // A3 - IL
+            16 => ["firstname" => "Christopher", "lastname" => "Weir",      "entry_date" => new \DateTime('26-08-2021')], // A3 - ID
+            17 => ["firstname" => "Christopher", "lastname" => "Donelly",   "entry_date" => new \DateTime('09-08-2021')], // A3 - 3D1
+            18 => ["firstname" => "Deborah",     "lastname" => "Vincent",   "entry_date" => new \DateTime('02-08-2021')], // A3 - 3D2
+            19 => ["firstname" => "Lue",         "lastname" => "Garman",    "entry_date" => new \DateTime('22-08-2021')], // A3 - 3D3
+            20 => ["firstname" => "Seth",        "lastname" => "Griggs",    "entry_date" => new \DateTime('23-08-2021')], // A4 - PHP
+            21 => ["firstname" => "Melissa",     "lastname" => "Ingrassia", "entry_date" => new \DateTime('28-08-2021')], // A4 - JS
+            22 => ["firstname" => "Diane",       "lastname" => "Duarte",    "entry_date" => new \DateTime('20-08-2021')], // A4 - SWIFT
+            23 => ["firstname" => "Mary",        "lastname" => "Foley",     "entry_date" => new \DateTime('11-08-2021')], // A4 - PS
+            24 => ["firstname" => "Elizabeth",   "lastname" => "Dunn",      "entry_date" => new \DateTime('18-08-2021')], // A4 - IL
+            25 => ["firstname" => "Charles",     "lastname" => "Mayle",     "entry_date" => new \DateTime('10-08-2021')], // A4 - ID
+            26 => ["firstname" => "Rudy",        "lastname" => "Lemen",     "entry_date" => new \DateTime('05-08-2021')], // A4 - 3D1
+            27 => ["firstname" => "William",     "lastname" => "Allen",     "entry_date" => new \DateTime('29-08-2021')], // A4 - 3D2
+            28 => ["firstname" => "Carmella",    "lastname" => "Settles",   "entry_date" => new \DateTime('22-08-2021')], // A4 - 3D3
+            29 => ["firstname" => "Christine",   "lastname" => "Jones",     "entry_date" => new \DateTime('03-08-2021')], // A5 - PHP
+            30 => ["firstname" => "Larry",       "lastname" => "Montes",    "entry_date" => new \DateTime('04-08-2021')], // A5 - JS
+            31 => ["firstname" => "Mary",        "lastname" => "Dineen",    "entry_date" => new \DateTime('21-08-2021')], // A5 - SWIFT
+            32 => ["firstname" => "Shawna",      "lastname" => "Spaulding", "entry_date" => new \DateTime('22-08-2021')], // A5 - PS
+            33 => ["firstname" => "Pauline",     "lastname" => "Hisey",     "entry_date" => new \DateTime('12-08-2021')], // A5 - IL
+            34 => ["firstname" => "Donald",      "lastname" => "Morris",    "entry_date" => new \DateTime('15-08-2021')], // A5 - ID
+            35 => ["firstname" => "Roman",       "lastname" => "Castillo",  "entry_date" => new \DateTime('16-08-2021')], // A5 - 3D1
+            36 => ["firstname" => "Brenda",      "lastname" => "Burrell",   "entry_date" => new \DateTime('20-08-2021')], // A5 - 3D2
+            37 => ["firstname" => "Claude",      "lastname" => "Wang",      "entry_date" => new \DateTime('21-08-2021')], // A5 - 3D3
         ];
 
         for ($i = 1; $i <= count($teachers); $i++) {
@@ -418,29 +456,29 @@ class AppFixtures extends Fixture
             $initCourse = $this->setCourses($courses[$i]["label"], $courses[$i]["start"], $courses[$i]["end"]);
             if ($i === 1 || $i === 2 || $i === 3 || $i === 10 || $i === 11 || $i === 12 || $i === 19 || $i === 20 || $i === 21) { // A3-DW
                 if($i === 1 || $i === 2 || $i === 3) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[0]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[10]);
                 } elseif ($i === 10 || $i === 11 || $i === 12) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[1]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[11]);
                 } elseif ($i === 19 || $i === 20 || $i === 21) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[2]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[12]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[4], $promotionRepository[0]);
             } elseif ($i === 4 || $i === 5 || $i === 6 || $i === 13 || $i === 14 || $i === 15 || $i === 22 || $i === 23 || $i === 24) { // A3-CD
                 if ($i === 4 || $i === 5 || $i == 6) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[3]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[13]);
                 } elseif ($i === 13 || $i === 14 || $i === 15) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[4]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[14]);
                 } elseif ($i === 22 || $i === 23 || $i === 24) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[5]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[15]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[5], $promotionRepository[0]);
             } elseif ($i === 7 || $i === 8 || $i === 9 || $i === 16 || $i === 17 || $i === 18 || $i === 25 || $i === 26 || $i === 27) { // A3-3D
                 if ($i === 7 || $i === 8 || $i === 9) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[6]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[16]);
                 } elseif ($i === 16 || $i === 17 || $i === 18) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[7]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[17]);
                 } elseif ($i === 25 || $i === 26 || $i === 27) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[8]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[18]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[6], $promotionRepository[0]);
             }
@@ -453,29 +491,29 @@ class AppFixtures extends Fixture
             $initCourse = $this->setCourses($courses[$i]["label"], $courses[$i]["start"], $courses[$i]["end"]);
             if ($i === 1 || $i === 2 || $i === 3 || $i === 10 || $i === 11 || $i === 12 || $i === 19 || $i === 20 || $i === 21) { // A4-DW
                 if($i === 1 || $i === 2 || $i === 3) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[0]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[19]);
                 } elseif ($i === 10 || $i === 11 || $i === 12) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[1]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[20]);
                 } elseif ($i === 19 || $i === 20 || $i === 21) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[2]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[21]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[7], $promotionRepository[0]);
             } elseif ($i === 4 || $i === 5 || $i === 6 || $i === 13 || $i === 14 || $i === 15 || $i === 22 || $i === 23 || $i === 24) { // A4-CD
                 if ($i === 4 || $i === 5 || $i == 6) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[3]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[22]);
                 } elseif ($i === 13 || $i === 14 || $i === 15) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[4]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[23]);
                 } elseif ($i === 22 || $i === 23 || $i === 24) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[5]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[24]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[8], $promotionRepository[0]);
             } elseif ($i === 7 || $i === 8 || $i === 9 || $i === 16 || $i === 17 || $i === 18 || $i === 25 || $i === 26 || $i === 27) { // A4-3D
                 if ($i === 7 || $i === 8 || $i === 9) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[6]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[25]);
                 } elseif ($i === 16 || $i === 17 || $i === 18) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[7]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[26]);
                 } elseif ($i === 25 || $i === 26 || $i === 27) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[8]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[27]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[9], $promotionRepository[0]);
             }
@@ -488,29 +526,29 @@ class AppFixtures extends Fixture
             $initCourse = $this->setCourses($courses[$i]["label"], $courses[$i]["start"], $courses[$i]["end"]);
             if ($i === 1 || $i === 2 || $i === 3 || $i === 10 || $i === 11 || $i === 12 || $i === 19 || $i === 20 || $i === 21) { // A5-DW
                 if($i === 1 || $i === 2 || $i === 3) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[0]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[28]);
                 } elseif ($i === 10 || $i === 11 || $i === 12) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[1]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[29]);
                 } elseif ($i === 19 || $i === 20 || $i === 21) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[2]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[30]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[10], $promotionRepository[0]);
             } elseif ($i === 4 || $i === 5 || $i === 6 || $i === 13 || $i === 14 || $i === 15 || $i === 22 || $i === 23 || $i === 24) { // A5-CD
                 if ($i === 4 || $i === 5 || $i == 6) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[3]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[31]);
                 } elseif ($i === 13 || $i === 14 || $i === 15) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[4]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[32]);
                 } elseif ($i === 22 || $i === 23 || $i === 24) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[5]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[33]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[11], $promotionRepository[0]);
             } elseif ($i === 7 || $i === 8 || $i === 9 || $i === 16 || $i === 17 || $i === 18 || $i === 25 || $i === 26 || $i === 27) { // A5-3D
                 if ($i === 7 || $i === 8 || $i === 9) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[6]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[34]);
                 } elseif ($i === 16 || $i === 17 || $i === 18) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[7]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[35]);
                 } elseif ($i === 25 || $i === 26 || $i === 27) {
-                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[8]);
+                    $teacherCourse = $this->setCourseToTeacher($initCourse, $teacherRepository[36]);
                 }
                 $course = $this->setCourseToClassroom($teacherCourse, $classroomRepository[12], $promotionRepository[0]);
             }
@@ -518,11 +556,177 @@ class AppFixtures extends Fixture
         }
         $manager->flush();
 
+        $courseRepository = $manager->getRepository('App:Course')->findAll();
+
         /**
          * Results : Fixtures
          * App\Entity\Result
          */
-
+        foreach ($studentRepository as $student) {
+            $classroom = $student->getClassroom()->getLabel();
+            if ($classroom === "A1") {
+                $result1 = $this->setResults($student, $courseRepository[0]);
+                $result2 = $this->setResults($student, $courseRepository[1]);
+                $result3 = $this->setResults($student, $courseRepository[2]);
+                $manager->persist($result1);
+                $manager->persist($result2);
+                $manager->persist($result3);
+            } elseif($classroom === "A2-DW" || $classroom === "A3-DW" || $classroom === "A4-DW" || $classroom === "A5-DW") {
+                if ($classroom === "A2-DW") {
+                    $result1 = $this->setResults($student, $courseRepository[3]);
+                    $result2 = $this->setResults($student, $courseRepository[4]);
+                    $result3 = $this->setResults($student, $courseRepository[5]);
+                    $result4 = $this->setResults($student, $courseRepository[12]);
+                    $result5 = $this->setResults($student, $courseRepository[13]);
+                    $result6 = $this->setResults($student, $courseRepository[14]);
+                    $result7 = $this->setResults($student, $courseRepository[21]);
+                    $result8 = $this->setResults($student, $courseRepository[22]);
+                    $result9 = $this->setResults($student, $courseRepository[23]);
+                } elseif ($classroom === "A3-DW") {
+                    $result1 = $this->setResults($student, $courseRepository[30]);
+                    $result2 = $this->setResults($student, $courseRepository[31]);
+                    $result3 = $this->setResults($student, $courseRepository[32]);
+                    $result4 = $this->setResults($student, $courseRepository[39]);
+                    $result5 = $this->setResults($student, $courseRepository[40]);
+                    $result6 = $this->setResults($student, $courseRepository[41]);
+                    $result7 = $this->setResults($student, $courseRepository[48]);
+                    $result8 = $this->setResults($student, $courseRepository[49]);
+                    $result9 = $this->setResults($student, $courseRepository[50]);
+                } elseif ($classroom === "A4-DW") {
+                    $result1 = $this->setResults($student, $courseRepository[57]);
+                    $result2 = $this->setResults($student, $courseRepository[58]);
+                    $result3 = $this->setResults($student, $courseRepository[59]);
+                    $result4 = $this->setResults($student, $courseRepository[66]);
+                    $result5 = $this->setResults($student, $courseRepository[67]);
+                    $result6 = $this->setResults($student, $courseRepository[68]);
+                    $result7 = $this->setResults($student, $courseRepository[75]);
+                    $result8 = $this->setResults($student, $courseRepository[76]);
+                    $result9 = $this->setResults($student, $courseRepository[77]);
+                } elseif ($classroom === "A5-DW") {
+                    $result1 = $this->setResults($student, $courseRepository[84]);
+                    $result2 = $this->setResults($student, $courseRepository[85]);
+                    $result3 = $this->setResults($student, $courseRepository[86]);
+                    $result4 = $this->setResults($student, $courseRepository[94]);
+                    $result5 = $this->setResults($student, $courseRepository[95]);
+                    $result6 = $this->setResults($student, $courseRepository[96]);
+                    $result7 = $this->setResults($student, $courseRepository[102]);
+                    $result8 = $this->setResults($student, $courseRepository[103]);
+                    $result9 = $this->setResults($student, $courseRepository[104]);
+                }
+                $manager->persist($result1);
+                $manager->persist($result2);
+                $manager->persist($result3);
+                $manager->persist($result4);
+                $manager->persist($result5);
+                $manager->persist($result6);
+                $manager->persist($result7);
+                $manager->persist($result8);
+                $manager->persist($result9);
+            } elseif($classroom === "A2-CD" || $classroom === "A3-CD" || $classroom === "A4-CD" || $classroom === "A5-CD") {
+                if ($classroom === "A2-CD") {
+                    $result1 = $this->setResults($student, $courseRepository[6]);
+                    $result2 = $this->setResults($student, $courseRepository[7]);
+                    $result3 = $this->setResults($student, $courseRepository[8]);
+                    $result4 = $this->setResults($student, $courseRepository[15]);
+                    $result5 = $this->setResults($student, $courseRepository[16]);
+                    $result6 = $this->setResults($student, $courseRepository[17]);
+                    $result7 = $this->setResults($student, $courseRepository[24]);
+                    $result8 = $this->setResults($student, $courseRepository[25]);
+                    $result9 = $this->setResults($student, $courseRepository[26]);
+                } elseif ($classroom === "A3-CD") {
+                    $result1 = $this->setResults($student, $courseRepository[33]);
+                    $result2 = $this->setResults($student, $courseRepository[34]);
+                    $result3 = $this->setResults($student, $courseRepository[35]);
+                    $result4 = $this->setResults($student, $courseRepository[42]);
+                    $result5 = $this->setResults($student, $courseRepository[43]);
+                    $result6 = $this->setResults($student, $courseRepository[44]);
+                    $result7 = $this->setResults($student, $courseRepository[51]);
+                    $result8 = $this->setResults($student, $courseRepository[52]);
+                    $result9 = $this->setResults($student, $courseRepository[53]);
+                } elseif ($classroom === "A4-CD") {
+                    $result1 = $this->setResults($student, $courseRepository[60]);
+                    $result2 = $this->setResults($student, $courseRepository[61]);
+                    $result3 = $this->setResults($student, $courseRepository[62]);
+                    $result4 = $this->setResults($student, $courseRepository[69]);
+                    $result5 = $this->setResults($student, $courseRepository[70]);
+                    $result6 = $this->setResults($student, $courseRepository[71]);
+                    $result7 = $this->setResults($student, $courseRepository[78]);
+                    $result8 = $this->setResults($student, $courseRepository[79]);
+                    $result9 = $this->setResults($student, $courseRepository[80]);
+                } elseif ($classroom === "A5-CD") {
+                    $result1 = $this->setResults($student, $courseRepository[87]);
+                    $result2 = $this->setResults($student, $courseRepository[88]);
+                    $result3 = $this->setResults($student, $courseRepository[89]);
+                    $result4 = $this->setResults($student, $courseRepository[97]);
+                    $result5 = $this->setResults($student, $courseRepository[98]);
+                    $result6 = $this->setResults($student, $courseRepository[99]);
+                    $result7 = $this->setResults($student, $courseRepository[105]);
+                    $result8 = $this->setResults($student, $courseRepository[106]);
+                    $result9 = $this->setResults($student, $courseRepository[107]);
+                }
+                $manager->persist($result1);
+                $manager->persist($result2);
+                $manager->persist($result3);
+                $manager->persist($result4);
+                $manager->persist($result5);
+                $manager->persist($result6);
+                $manager->persist($result7);
+                $manager->persist($result8);
+                $manager->persist($result9);
+            } elseif($classroom === "A2-3D" || $classroom === "A3-3D" || $classroom === "A4-3D" || $classroom === "A5-3D") {
+                if ($classroom === "A2-3D") {
+                    $result1 = $this->setResults($student, $courseRepository[9]);
+                    $result2 = $this->setResults($student, $courseRepository[10]);
+                    $result3 = $this->setResults($student, $courseRepository[11]);
+                    $result4 = $this->setResults($student, $courseRepository[18]);
+                    $result5 = $this->setResults($student, $courseRepository[19]);
+                    $result6 = $this->setResults($student, $courseRepository[20]);
+                    $result7 = $this->setResults($student, $courseRepository[27]);
+                    $result8 = $this->setResults($student, $courseRepository[28]);
+                    $result9 = $this->setResults($student, $courseRepository[29]);
+                } elseif ($classroom === "A3-3D") {
+                    $result1 = $this->setResults($student, $courseRepository[36]);
+                    $result2 = $this->setResults($student, $courseRepository[37]);
+                    $result3 = $this->setResults($student, $courseRepository[38]);
+                    $result4 = $this->setResults($student, $courseRepository[45]);
+                    $result5 = $this->setResults($student, $courseRepository[46]);
+                    $result6 = $this->setResults($student, $courseRepository[47]);
+                    $result7 = $this->setResults($student, $courseRepository[54]);
+                    $result8 = $this->setResults($student, $courseRepository[55]);
+                    $result9 = $this->setResults($student, $courseRepository[56]);
+                } elseif ($classroom === "A4-3D") {
+                    $result1 = $this->setResults($student, $courseRepository[63]);
+                    $result2 = $this->setResults($student, $courseRepository[64]);
+                    $result3 = $this->setResults($student, $courseRepository[65]);
+                    $result4 = $this->setResults($student, $courseRepository[72]);
+                    $result5 = $this->setResults($student, $courseRepository[73]);
+                    $result6 = $this->setResults($student, $courseRepository[74]);
+                    $result7 = $this->setResults($student, $courseRepository[81]);
+                    $result8 = $this->setResults($student, $courseRepository[82]);
+                    $result9 = $this->setResults($student, $courseRepository[83]);
+                } elseif ($classroom === "A5-3D") {
+                    $result1 = $this->setResults($student, $courseRepository[90]);
+                    $result2 = $this->setResults($student, $courseRepository[91]);
+                    $result3 = $this->setResults($student, $courseRepository[92]);
+                    $result4 = $this->setResults($student, $courseRepository[100]);
+                    $result5 = $this->setResults($student, $courseRepository[101]);
+                    $result6 = $this->setResults($student, $courseRepository[102]);
+                    $result7 = $this->setResults($student, $courseRepository[108]);
+                    $result8 = $this->setResults($student, $courseRepository[109]);
+                    $result9 = $this->setResults($student, $courseRepository[110]);
+                }
+                $manager->persist($result1);
+                $manager->persist($result2);
+                $manager->persist($result3);
+                $manager->persist($result4);
+                $manager->persist($result5);
+                $manager->persist($result6);
+                $manager->persist($result7);
+                $manager->persist($result8);
+                $manager->persist($result9);
+            }
+            $manager->flush();
+        }
 
         /**
          * Users : Fixtures
