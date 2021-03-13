@@ -8,11 +8,40 @@ use App\Entity\Promotion;
 use App\Entity\Result;
 use App\Entity\Student;
 use App\Entity\Teacher;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Firebase\JWT\JWT;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
+    /**
+     * @var $passwordEncoder
+     */
+    private $passwordEncoder;
+
+    /**
+     * @var $parameter
+     */
+    private $parameter;
+
+    /**
+     * AppFixtures constructor.
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     */
+    public function __construct(ContainerBagInterface $parameter, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $this->passwordEncoder = $passwordEncoder;
+        $this->parameter = $parameter;
+    }
+
+    /**
+     * @param $start
+     * @param $end
+     * @return Promotion
+     */
     public function setPromotions($start, $end)
     {
         $promotion = new Promotion();
@@ -21,6 +50,11 @@ class AppFixtures extends Fixture
         return $promotion;
     }
 
+    /**
+     * @param $label
+     * @param $promotion
+     * @return Classroom
+     */
     public function setClassrooms($label, $promotion)
     {
         $classroom = new Classroom();
@@ -29,6 +63,13 @@ class AppFixtures extends Fixture
         return $classroom;
     }
 
+    /**
+     * @param $firstname
+     * @param $lastname
+     * @param $age
+     * @param $entry_date
+     * @return Student
+     */
     public function setStudents($firstname, $lastname, $age, $entry_date)
     {
         $student = new Student();
@@ -39,6 +80,12 @@ class AppFixtures extends Fixture
         return $student;
     }
 
+    /**
+     * @param $student
+     * @param $classroom
+     * @param $promotion
+     * @return mixed
+     */
     public function setStudentsInClassrooms($student, $classroom, $promotion)
     {
         $student->setClassroom($classroom);
@@ -46,6 +93,12 @@ class AppFixtures extends Fixture
         return $student;
     }
 
+    /**
+     * @param $firstname
+     * @param $lastname
+     * @param $entry_date
+     * @return Teacher
+     */
     public function setTeachers($firstname, $lastname, $entry_date) {
         $teacher = new Teacher();
         $teacher->setFirstname($firstname);
@@ -54,6 +107,12 @@ class AppFixtures extends Fixture
         return $teacher;
     }
 
+    /**
+     * @param $label
+     * @param $start
+     * @param $end
+     * @return Course
+     */
     public function setCourses($label, $start, $end)
     {
         $course = new Course();
@@ -63,12 +122,23 @@ class AppFixtures extends Fixture
         return $course;
     }
 
+    /**
+     * @param $course
+     * @param $teacher
+     * @return mixed
+     */
     public function setCourseToTeacher($course, $teacher)
     {
         $course->setTeacher($teacher);
         return $course;
     }
 
+    /**
+     * @param $course
+     * @param $classroom
+     * @param $promotion
+     * @return mixed
+     */
     public function setCourseToClassroom($course, $classroom, $promotion)
     {
         $course->setClassroom($classroom);
@@ -76,6 +146,11 @@ class AppFixtures extends Fixture
         return $course;
     }
 
+    /**
+     * @param $student
+     * @param $course
+     * @return Result
+     */
     public function setResults($student, $course) {
         $result = new Result();
         $result->setStudent($student);
@@ -84,7 +159,32 @@ class AppFixtures extends Fixture
         return $result;
     }
 
+    /**
+     * @param $firstname
+     * @param $lastname
+     * @param $email
+     * @return User
+     */
+    public function setUsers($firstname, $lastname, $email)
+    {
+        $user = new User();
+        $user->setFirstname($firstname);
+        $user->setLastname($lastname);
+        $user->setEmail($email);
+        $user->setPassword($this->passwordEncoder->encodePassword($user, 'password'));
+        $payload = [
+            "user" => $user->getUsername(),
+            "exp"  => (new \DateTime())->modify("+5 minutes")->getTimestamp(),
+        ];
+        $jwt = JWT::encode($payload, $this->parameter->get('jwt_secret'), 'HS256');
+        $user->setApiToken($jwt);
+        $user->setRoles(["ROLE_ADMIN"]);
+        return $user;
+    }
 
+    /**
+     * @param ObjectManager $manager
+     */
     public function load(ObjectManager $manager)
     {
         /**
@@ -732,5 +832,18 @@ class AppFixtures extends Fixture
          * Users : Fixtures
          * App\Entity\User
          */
+        $users = [
+            1 => ["firstname" => "Alexis",  "lastname" => "Bougy",   "email" => "alexis.bougy@devinci.fr"],
+            2 => ["firstname" => "Nicolas", "lastname" => "Rauber",  "email" => "nicolas.rauber@devinci.fr"],
+            3 => ["firstname" => "Karine",  "lastname" => "Mousdik", "email" => "karine.mousdik@devinci.fr"],
+            4 => ["firstname" => "Marie",   "lastname" => "Galan",   "email" => "marie.galan@devinci.fr"],
+            5 => ["firstname" => "Pierre",  "lastname" => "Grimaud", "email" => "pierre.grimaud@devinci.fr"],
+        ];
+
+        for ($i = 1; $i <= count($users); $i++) {
+            $user = $this->setUsers($users[$i]["firstname"], $users[$i]["lastname"], $users[$i]["email"]);
+            $manager->persist($user);
+        }
+        $manager->flush();
     }
 }
