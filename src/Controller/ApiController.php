@@ -116,7 +116,7 @@ class ApiController extends AbstractController
                 if (!empty($classrooms)) {
                     foreach ($classrooms as $classroom) {
                         array_push($arrayClassrooms, [
-                            'id' => $classroom->getId(),
+                            'id'    => $classroom->getId(),
                             'label' => $classroom->getLabel()
                         ]);
                     }
@@ -132,7 +132,6 @@ class ApiController extends AbstractController
                     );
                     return $this->returnResponse($collection);
                 }
-                break;
             case "promotion":
                 $msg = "Wrong Promotion !";
                 $promotions = $this->promotionRepository->findAll();
@@ -157,19 +156,144 @@ class ApiController extends AbstractController
                     );
                     return $this->returnResponse($collection);
                 }
-                break;
             case "course":
                 $msg = "Wrong Course !";
-                break;
+                $courses = $this->courseRepository->findAll();
+                $arrayCourses = array();
+                if (!empty($courses)) {
+                    foreach ($courses as $course) {
+                        array_push($arrayCourses, [
+                           "id"     => $course->getId(),
+                           "label"  => $course->getLabel(),
+                           "start"  => $course->getStart(),
+                           "end"    => $course->getEnd(),
+                           "teacher" => [
+                               "id"         => $course->getTeacher()->getId(),
+                               "firstname"  => $course->getTeacher()->getFirstname(),
+                               "lastname"   => $course->getTeacher()->getLastname()
+                           ],
+                           "classroom" => [
+                               "id"     => $course->getClassroom()->getId(),
+                               "label"  => $course->getClassroom()->getLabel()
+                           ],
+                           "promotion" => [
+                               "id"     => $course->getPromotion()->getId(),
+                               "start"  => $course->getPromotion()->getStart(),
+                               "end"    => $course->getPromotion()->getEnd()
+                           ]
+                        ]);
+                    }
+                    $collection = array(
+                        "msg" => $msg,
+                        "courses_available" => $arrayCourses
+                    );
+                    return $this->returnResponse($collection);
+                } else {
+                    $collection = array(
+                        "error" => $msg,
+                        "fixtures" => $fixtures
+                    );
+                    return $this->returnResponse($collection);
+                }
             case "result":
                 $msg = "Wrong Result !";
-                break;
+                $results = $this->resultRepository->findAll();
+                $arrayResults = array();
+                if (!empty($results)) {
+                    foreach ($results as $result) {
+                        array_push($arrayResults, [
+                           "id"     => $result->getId(),
+                           "score"  => $result->getScore(),
+                           "student" => [
+                               "id"         => $result->getStudent()->getId(),
+                               "firstname"  => $result->getStudent()->getFirstname(),
+                               "lastname"   => $result->getStudent()->getLastname(),
+                           ],
+                           "Course" => [
+                               "id"     => $result->getCourse()->getId(),
+                               "label"  => $result->getCourse()->getLabel(),
+                               "start"  => $result->getCourse()->getStart(),
+                               "end"    => $result->getCourse()->getEnd()
+                           ]
+                        ]);
+                    }
+                    $collection = array(
+                        "msg" => $msg,
+                        "results_available" => $arrayResults
+                    );
+                    return $this->returnResponse($collection);
+                } else {
+                    $collection = array(
+                        "error" => $msg,
+                        "fixtures" => $fixtures
+                    );
+                    return $this->returnResponse($collection);
+                }
             case "student":
                 $msg = "Wrong Student !";
-                break;
+                $students = $this->studentRepository->findAll();
+                $arrayStudents = array();
+                if (!empty($students)) {
+                    foreach ($students as $student) {
+                        array_push($arrayStudents, [
+                            "id"         => $student->getId(),
+                            "firstname"  => $student->getFirstname(),
+                            "lastname"   => $student->getLastname(),
+                            "age"        => $student->getAge(),
+                            "entry_date" => $student->getEntryDate(),
+                            "classroom" => [
+                                "id"    => $student->getClassroom()->getId(),
+                                "label" => $student->getClassroom()->getLabel()
+                            ],
+                            "promotion" => [
+                                "id"    => $student->getPromotion()->getId(),
+                                "start" => $student->getPromotion()->getStart(),
+                                "end"   => $student->getPromotion()->getEnd()
+                            ]
+                        ]);
+                    }
+                    $collection = array(
+                        "msg" => $msg,
+                        "results_available" => $arrayStudents
+                    );
+                    return $this->returnResponse($collection);
+                } else {
+                    $collection = array(
+                        "error" => $msg,
+                        "fixtures" => $fixtures
+                    );
+                    return $this->returnResponse($collection);
+                }
             case "teacher":
                 $msg = "Wrong Teacher !";
-                break;
+                $teachers = $this->teacherRepository->findAll();
+                $arrayTeachers = array();
+                if (!empty($teachers)) {
+                    foreach ($teachers as $teacher) {
+                        array_push($arrayTeachers, [
+                            "id"         => $teacher->getId(),
+                            "firstname"  => $teacher->getFirstname(),
+                            "lastname"   => $teacher->getLastname(),
+                            "entry_date" => $teacher->getEntryDate(),
+                        ]);
+                    }
+                    $collection = array(
+                        "msg" => $msg,
+                        "results_available" => $arrayTeachers
+                    );
+                    return $this->returnResponse($collection);
+                } else {
+                    $collection = array(
+                        "error" => $msg,
+                        "fixtures" => $fixtures
+                    );
+                    return $this->returnResponse($collection);
+                }
+            default:
+                $collection = array(
+                    "error" => "Something went wrong ?!"
+                );
+            return $this->returnResponse($collection);
         }
     }
 
@@ -194,20 +318,24 @@ class ApiController extends AbstractController
     public function allClassrooms(): Response
     {
         $classrooms = $this->classroomRepository->findAll();
-        $collection = array();
-        // TODO : (Bonus) => Count how many Student are in !
-        foreach ($classrooms as $classroom) {
-            $collection[] = array(
-                'id'    => $classroom->getId(),
-                'label' => $classroom->getLabel(),
-                'promotion' => [
-                    'id'    => $classroom->getPromotion()->getId(),
-                    'start' => $classroom->getPromotion()->getStart(),
-                    'end'   => $classroom->getPromotion()->getEnd()
-                ]
-            );
+        if (!empty($classrooms)) {
+            foreach ($classrooms as $classroom) {
+                $countStudents = count($classroom->getStudents());
+                $collection[] = array(
+                    'id'    => $classroom->getId(),
+                    'label' => $classroom->getLabel(),
+                    'count_student' => $countStudents,
+                    'promotion' => [
+                        'id'    => $classroom->getPromotion()->getId(),
+                        'start' => $classroom->getPromotion()->getStart(),
+                        'end'   => $classroom->getPromotion()->getEnd()
+                    ]
+                );
+            }
+            return $this->returnResponse($collection);
+        } else {
+            return $this->returnBad("classroom");
         }
-        return $this->returnResponse($collection);
     }
 
     /**
@@ -215,7 +343,7 @@ class ApiController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function createClassroom(Request $request) : Response
+    public function createClassroom(Request $request): Response
     {
         $promotionId = $request->get("promotion");
         $promotion   = $this->promotionRepository->find($promotionId);
@@ -312,13 +440,280 @@ class ApiController extends AbstractController
         }
     }
 
-    // TODO : Course (All, Create, Show, Edit, Delete)
+    /**
+     * @Route("/promotions/", name="api_promotions", methods={"GET"})
+     * @return Response
+     */
+    public function allPromotions(): Response
+    {
+        $promotions = $this->promotionRepository->findAll();
+        if (!empty($promotions)) {
+            foreach ($promotions as $promotion) {
+                $classrooms = $this->classroomRepository->findBy(["promotion" => $promotion->getId()]);
+                $arrayClassrooms = array();
+                foreach ($classrooms as $classroom) {
+                    $countStudent = count($classroom->getStudents());
+                    array_push($arrayClassrooms, [
+                        "id"             => $classroom->getId(),
+                        "label"          => $classroom->getLabel(),
+                        "count_students" => $countStudent
+                    ]);
+                }
+                $collection[] = array(
+                  "id" => $promotion->getId(),
+                  "start" => $promotion->getStart(),
+                  "end" => $promotion->getEnd(),
+                  "classrooms" => $arrayClassrooms
+                );
+            }
+            return $this->returnResponse($collection);
+        } else {
+            return $this->returnBad("promotion");
+        }
+    }
 
-    // TODO : Promotion (All, Create, Show, Edit, Delete)
+    /**
+     * @Route("/promotion/new", name="api_promotion_new", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createPromotion(Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/promotion/{id}", name="api_promotion_show", methods={"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function showPromotion($id): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/promotion/{id}", name="api_promotion_edit", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function editPromotion($id, Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/promotion/{id}", name="api_promotion_delete", methods={"DELETE"})
+     * @param $id
+     * @return Response
+     */
+    public function deletePromotion($id): Response
+    {
+        // TODO
+    }
+
+    // TODO : Course (All, Create, Show, Edit, Delete)
+    /**
+     * @Route("/courses/", name="api_courses", methods={"GET"})
+     * @return Response
+     */
+    public function allCourses(): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/course/new", name="api_course_new", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createCourse(Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/course/{id}", name="api_course_show", methods={"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function showCourse($id): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/course/{id}", name="api_course_edit", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function editCourse($id, Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/course/{id}", name="api_course_delete", methods={"DELETE"})
+     * @param $id
+     * @return Response
+     */
+    public function deleteCourse($id): Response
+    {
+        // TODO
+    }
 
     // TODO : Result (All, Create, Show, Edit, Delete)
+    /**
+     * @Route("/results/", name="api_results", methods={"GET"})
+     * @return Response
+     */
+    public function allResults(): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/result/new", name="api_result_new", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createResult(Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/result/{id}", name="api_result_show", methods={"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function showResult($id): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/result/{id}", name="api_result_edit", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function editResult($id, Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/result/{id}", name="api_result_delete", methods={"DELETE"})
+     * @param $id
+     * @return Response
+     */
+    public function deleteResult($id): Response
+    {
+        // TODO
+    }
 
     // TODO : Student (All, Create, Show, Edit, Delete)
+    /**
+     * @Route("/students/", name="api_students", methods={"GET"})
+     * @return Response
+     */
+    public function allStudents(): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/student/new", name="api_student_new", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createStudent(Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/student/{id}", name="api_student_show", methods={"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function showStudent($id): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/student/{id}", name="api_student_edit", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function editStudent($id, Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/student/{id}", name="api_student_delete", methods={"DELETE"})
+     * @param $id
+     * @return Response
+     */
+    public function deleteStudent($id): Response
+    {
+        // TODO
+    }
 
     // TODO : Teacher (All, Create, Show, Edit, Delete)
+    /**
+     * @Route("/teachers/", name="api_teachers", methods={"GET"})
+     * @return Response
+     */
+    public function allTeachers(): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/teacher/new", name="api_teacher_new", methods={"POST"})
+     * @param Request $request
+     * @return Response
+     */
+    public function createTeacher(Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/teacher/{id}", name="api_teacher_show", methods={"GET"})
+     * @param $id
+     * @return Response
+     */
+    public function showTeacher($id): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/teacher/{id}", name="api_teacher_edit", methods={"PUT"})
+     * @param $id
+     * @param Request $request
+     * @return Response
+     */
+    public function editTeacher($id, Request $request): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @Route("/teacher/{id}", name="api_teacher_delete", methods={"DELETE"})
+     * @param $id
+     * @return Response
+     */
+    public function deleteTeacher($id): Response
+    {
+        // TODO
+    }
 }

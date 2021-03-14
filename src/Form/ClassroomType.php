@@ -17,7 +17,8 @@ class ClassroomType extends AbstractType
         $builder
             ->add('label', TextType::class)
             ->add('promotion', EntityType::class, [
-                'class' => Promotion::class
+                'class' => Promotion::class,
+                'choice_label' => 'start'
             ])
         ;
     }
