@@ -921,14 +921,27 @@ class ApiController extends AbstractController
         }
     }
 
-    // TODO : Student (All, Create, Show, Edit, Delete)
     /**
      * @Route("/students/", name="api_students", methods={"GET"})
      * @return Response
      */
     public function allStudents(): Response
     {
-        // TODO
+        $students = $this->studentRepository->findAll();
+        if (!empty($students)) {
+            foreach ($students as $student) {
+                $collection[] = array(
+                    "id" => $student->getId(),
+                    "firstname" => $student->getFirstname(),
+                    "lastname" => $student->getLastname(),
+                    "age" => $student->getAge(),
+                    "entry_date" => $student->getEntryDate()
+                );
+            }
+            return $this->returnResponse($collection);
+        } else {
+            return $this->returnBad("student");
+        }
     }
 
     /**
@@ -938,7 +951,31 @@ class ApiController extends AbstractController
      */
     public function createStudent(Request $request): Response
     {
-        // TODO
+        $promotionR = $request->request->get("promotion");
+        $classroomR = $request->request->get("classroom");
+        $promotion = $this->promotionRepository->find($promotionR);
+        $classroom = $this->classroomRepository->find($classroomR);
+
+        if ($promotion instanceof Promotion && $classroom instanceof Classroom) {
+            $student = new Student();
+            $student->setFirstname($request->request->get("firstname"));
+            $student->setLastname($request->request->get("lastname"));
+            $student->setAge($request->request->get("age"));
+            $student->setEntryDate(new \DateTime($request->request->get("entry_date")));
+            $student->setPromotion($promotion);
+            $student->setClassroom($classroom);
+            $this->objectManager->persist($student);
+            $this->objectManager->flush();
+            $collection = array(
+                // TODO : Show what you create !
+                "msg" => "Result Created !"
+            );
+            return $this->returnResponse($collection);
+        } elseif (!$promotion instanceof Promotion && $classroom instanceof Classroom) {
+            return $this->returnBad("promotion");
+        } elseif ($promotion instanceof Promotion && !$classroom instanceof Classroom) {
+            return $this->returnBad("classroom");
+        }
     }
 
     /**
@@ -948,7 +985,43 @@ class ApiController extends AbstractController
      */
     public function showStudent($id): Response
     {
-        // TODO
+        $student = $this->studentRepository->find($id);
+        if (!$student instanceof Student) {
+            $this->returnBad("student");
+        } else {
+            $arrayResults = array();
+            $results = $student->getResults();
+            foreach($results as $result) {
+                array_push($arrayResults, [
+                    "id" => $result->getId(),
+                    "score" => $result->getScore(),
+                    "course" => [
+                        "id" => $result->getCourse()->getId(),
+                        "label" => $result->getCourse()->getLabel(),
+                        "start" => $result->getCourse()->getStart(),
+                        "end" => $result->getCourse()->getEnd()
+                    ]
+                ]);
+            }
+            $collection = array(
+                "id"    => $student->getId(),
+                "firstname" => $student->getFirstname(),
+                "lastname" => $student->getLastname(),
+                "age" => $student->getAge(),
+                "entry_date" => $student->getEntryDate(),
+                "promotion" => [
+                    "id" => $student->getPromotion()->getId(),
+                    "start" => $student->getPromotion()->getStart(),
+                    "end" => $student->getPromotion()->getEnd()
+                ],
+                "classroom" => [
+                    "id" => $student->getClassroom()->getId(),
+                    "label" => $student->getClassroom()->getLabel()
+                ],
+                "results" => $arrayResults
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -959,7 +1032,47 @@ class ApiController extends AbstractController
      */
     public function editStudent($id, Request $request): Response
     {
-        // TODO
+        $student = $this->studentRepository->find($id);
+        if (!$student instanceof Student) {
+            $this->returnBad("student");
+        } else {
+            if ($request->request->get("firstname")) {
+                $student->setFirstname($request->request->get("firstname"));
+            }
+            if ($request->request->get("lastname")) {
+                $student->setLastname($request->request->get("lastname"));
+            }
+            if ($request->request->get("age")) {
+                $student->setAge($request->request->get("age"));
+            }
+            if ($request->request->get("entry_date")) {
+                $student->setEntryDate(new \DateTime($request->request->get("entry_date")));
+            }
+            if ($request->request->get("promotion")) {
+                $promotionId = $request->request->get("promotion");
+                $promotion = $this->promotionRepository->find($promotionId);
+                if ($promotion instanceof Promotion) {
+                    $student->setPromotion($promotion);
+                } else {
+                    return $this->returnBad("promotion");
+                }
+            }
+            if ($request->request->get("classroom")) {
+                $classroomId = $request->request->get("classroom");
+                $classroom = $this->classroomRepository->find($classroomId);
+                if ($classroom instanceof Classroom) {
+                    $student->setClassroom($classroom);
+                } else {
+                    return $this->returnBad("classroom");
+                }
+            }
+            $this->objectManager->persist($student);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Student (id) : ".$id." has been edited !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
