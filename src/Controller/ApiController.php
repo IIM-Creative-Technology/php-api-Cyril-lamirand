@@ -11,6 +11,7 @@ use App\Entity\Student;
 use App\Entity\Teacher;
 
 use App\Form\ClassroomType;
+use App\Form\PromotionType;
 use App\Repository\ClassroomRepository;
 use App\Repository\CourseRepository;
 use App\Repository\PromotionRepository;
@@ -355,7 +356,7 @@ class ApiController extends AbstractController
             $form->submit($request->request->all());
             $this->objectManager->persist($classroom);
             $this->objectManager->flush();
-            $collection[] = array(
+            $collection = array(
                 "msg" => "Classroom Created !",
                 "classroom" => [
                     "id"    => $classroom->getId(),
@@ -382,7 +383,7 @@ class ApiController extends AbstractController
         if (!$classroom instanceof Classroom) {
             return $this->returnBad("classroom");
         } else {
-            $collection[] = array(
+            $collection = array(
                 "id"    => $classroom->getId(),
                 "label" => $classroom->getLabel(),
                 "promotion" => [
@@ -416,7 +417,10 @@ class ApiController extends AbstractController
             }
             $this->objectManager->persist($classroom);
             $this->objectManager->flush();
-            return $this->returnResponse($classroom);
+            $collection = array(
+                "msg" => "Classroom edit : Succeed !"
+            );
+            return $this->returnResponse($collection);
         }
     }
 
@@ -433,7 +437,7 @@ class ApiController extends AbstractController
         } else {
             $this->objectManager->remove($classroom);
             $this->objectManager->flush();
-            $collection[] = array(
+            $collection = array(
                 "msg" => "Classroom : ".$id." has been deleted !"
             );
             return $this->returnResponse($collection);
@@ -479,7 +483,20 @@ class ApiController extends AbstractController
      */
     public function createPromotion(Request $request): Response
     {
-        // TODO
+        $promotion = new Promotion();
+        $form = $this->createForm(PromotionType::class, $promotion);
+        $form->submit($request->request->all());
+        $this->objectManager->persist($promotion);
+        $this->objectManager->flush();
+        $collection = array(
+            "msg" => "Promotion Created !",
+            "promotion" => [
+                "id"    => $promotion->getId(),
+                "start" => $promotion->getStart(),
+                "end"   => $promotion->getEnd()
+            ]
+        );
+        return $this->returnResponse($collection);
     }
 
     /**
@@ -489,7 +506,17 @@ class ApiController extends AbstractController
      */
     public function showPromotion($id): Response
     {
-        // TODO
+        $promotion = $this->promotionRepository->find($id);
+        if (!$promotion instanceof Promotion) {
+            return $this->returnBad("promotion");
+        } else {
+            $collection = array(
+                "id"    => $promotion->getId(),
+                "start" => $promotion->getStart(),
+                "end"   => $promotion->getEnd()
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -500,7 +527,23 @@ class ApiController extends AbstractController
      */
     public function editPromotion($id, Request $request): Response
     {
-        // TODO
+        $promotion = $this->promotionRepository->find($id);
+        if (!$promotion instanceof Promotion) {
+            return $this->returnBad("promotion");
+        } else {
+            if ($request->request->get("start")) {
+                $promotion->setStart($request->request->get("start"));
+            }
+            if ($request->request->get("end")) {
+                $promotion->setEnd($request->request->get("end"));
+            }
+            $this->objectManager->persist($promotion);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Promotion edit : Succeed !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -510,7 +553,17 @@ class ApiController extends AbstractController
      */
     public function deletePromotion($id): Response
     {
-        // TODO
+        $promotion = $this->promotionRepository->find($id);
+        if (!$promotion instanceof Promotion) {
+            return $this->returnBad("promotion");
+        } else {
+            $this->objectManager->remove($promotion);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Promotion (id) : ".$id." has been deleted !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     // TODO : Course (All, Create, Show, Edit, Delete)

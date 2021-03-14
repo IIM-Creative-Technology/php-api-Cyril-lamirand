@@ -4,12 +4,7 @@
     <list default="true" id="046f8dd3-eff8-4130-826a-2693846a1bf3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/ApiController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/ApiController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Form/ClassroomType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/ClassroomType.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Form/CourseType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/CourseType.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Form/PromotionType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/PromotionType.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Form/ResultType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/ResultType.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Form/StudentType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/StudentType.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Form/TeacherType.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Form/TeacherType.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,7 +158,7 @@
       <workItem from="1615199086651" duration="1839000" />
       <workItem from="1615331450344" duration="4554000" />
       <workItem from="1615370516947" duration="604000" />
-      <workItem from="1615590587105" duration="35248000" />
+      <workItem from="1615590587105" duration="37076000" />
     </task>
     <servers />
   </component>
