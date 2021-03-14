@@ -11,6 +11,7 @@ use App\Entity\Student;
 use App\Entity\Teacher;
 
 use App\Form\ClassroomType;
+use App\Form\CourseType;
 use App\Form\PromotionType;
 use App\Repository\ClassroomRepository;
 use App\Repository\CourseRepository;
@@ -566,14 +567,26 @@ class ApiController extends AbstractController
         }
     }
 
-    // TODO : Course (All, Create, Show, Edit, Delete)
     /**
      * @Route("/courses/", name="api_courses", methods={"GET"})
      * @return Response
      */
     public function allCourses(): Response
     {
-        // TODO
+        $courses = $this->courseRepository->findAll();
+        if (!empty($courses)) {
+            foreach ($courses as $course) {
+                $collection[] = array(
+                    "id" => $course->getId(),
+                    "label" => $course->getLabel(),
+                    "start" => $course->getStart(),
+                    "end" => $course->getEnd()
+                );
+            }
+            return $this->returnResponse($collection);
+        } else {
+            return $this->returnBad("course");
+        }
     }
 
     /**
@@ -583,7 +596,51 @@ class ApiController extends AbstractController
      */
     public function createCourse(Request $request): Response
     {
-        // TODO
+        $teacherR = $request->request->get("teacher");
+        $classroomR = $request->request->get("classroom");
+        $teacher = $this->teacherRepository->find($teacherR);
+        $classroom = $this->classroomRepository->find($classroomR);
+
+        if ($teacher instanceof Teacher && $classroom instanceof Classroom) {
+            $course = new Course();
+            $course->setLabel($request->request->get("label"));
+            $course->setStart(new \DateTime($request->request->get("start")));
+            $course->setEnd(new \DateTime($request->request->get("end")));
+            $course->setClassroom($classroom);
+            $course->setPromotion($classroom->getPromotion());
+            $course->setTeacher($teacher);
+            $this->objectManager->persist($course);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Course Created !",
+                "course" => [
+                    "id"    => $course->getId(),
+                    "label" => $course->getLabel(),
+                    "start" => $course->getStart(),
+                    "end"   => $course->getEnd(),
+                    "promotion" => [
+                        "id" => $course->getPromotion()->getId(),
+                        "start" => $course->getPromotion()->getStart(),
+                        "end" => $course->getPromotion()->getEnd()
+                    ],
+                    "classroom" => [
+                        "id" => $course->getClassroom()->getId(),
+                        "label" => $course->getClassroom()->getLabel()
+                    ],
+                    "teacher" => [
+                        "id" => $course->getTeacher()->getId(),
+                        "firstname" => $course->getTeacher()->getFirstname(),
+                        "lastname" => $course->getTeacher()->getLastname(),
+                        "entry_date" => $course->getTeacher()->getEntryDate()
+                    ]
+                ]
+            );
+            return $this->returnResponse($collection);
+        } elseif (!$teacher instanceof Teacher && $classroom instanceof Classroom) {
+            return $this->returnBad("teacher");
+        } elseif ($teacher instanceof Teacher && !$classroom instanceof Classroom) {
+            return $this->returnBad("classroom");
+        }
     }
 
     /**
@@ -593,7 +650,33 @@ class ApiController extends AbstractController
      */
     public function showCourse($id): Response
     {
-        // TODO
+         $course = $this->courseRepository->find($id);
+         if (!$course instanceof Course) {
+             $this->returnBad("course");
+         } else {
+             $collection = array(
+                 "id"    => $course->getId(),
+                 "label" => $course->getLabel(),
+                 "start" => $course->getStart(),
+                 "end"   => $course->getEnd(),
+                 "promotion" => [
+                     "id" => $course->getPromotion()->getId(),
+                     "start" => $course->getPromotion()->getStart(),
+                     "end" => $course->getPromotion()->getEnd()
+                 ],
+                 "classroom" => [
+                     "id" => $course->getClassroom()->getId(),
+                     "label" => $course->getClassroom()->getLabel()
+                 ],
+                 "teacher" => [
+                     "id" => $course->getTeacher()->getId(),
+                     "firstname" => $course->getTeacher()->getFirstname(),
+                     "lastname" => $course->getTeacher()->getLastname(),
+                     "entry_date" => $course->getTeacher()->getEntryDate()
+                 ]
+             );
+             return $this->returnResponse($collection);
+         }
     }
 
     /**
@@ -604,7 +687,54 @@ class ApiController extends AbstractController
      */
     public function editCourse($id, Request $request): Response
     {
-        // TODO
+        $course = $this->courseRepository->find($id);
+        if (!$course instanceof Course) {
+            $this->returnBad("course");
+        } else {
+            if ($request->request->get("label")) {
+                $course->setLabel($request->request->get("label"));
+            }
+            if ($request->request->get("start")) {
+                $course->setStart(new \DateTime($request->request->get("start")));
+            }
+            if ($request->request->get("end")) {
+                $course->setEnd(new \DateTime($request->request->get("end")));
+            }
+            if ($request->request->get("teacher")) {
+                $teacherId = $request->request->get("teacher");
+                $teacher = $this->teacherRepository->find($teacherId);
+                if ($teacher instanceof Teacher) {
+                    $course->setTeacher($teacher);
+                } else {
+                    return $this->returnBad("teacher");
+                }
+            }
+            if ($request->request->get("classroom")) {
+                $classroomId = $request->request->get("classroom");
+                $classroom = $this->classroomRepository->find($classroomId);
+                if ($classroom instanceof Classroom) {
+                    $course->setClassroom($classroom);
+                } else {
+                    return $this->returnBad("classroom");
+                }
+            }
+            if ($request->request->get("promotion")) {
+                $promotionId = $request->request->get("promotion");
+                $promotion = $this->promotionRepository->find($promotionId);
+                if ($promotion instanceof Promotion) {
+                    $course->setPromotion($promotion);
+                } else {
+                    return $this->returnBad("promotion");
+                }
+            }
+            $this->objectManager->persist($course);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Course edit : Succeed !"
+            );
+            return $this->returnResponse($collection);
+        }
+
     }
 
     /**
@@ -614,7 +744,17 @@ class ApiController extends AbstractController
      */
     public function deleteCourse($id): Response
     {
-        // TODO
+        $course = $this->courseRepository->find($id);
+        if (!$course instanceof Course) {
+            return $this->returnBad("course");
+        } else {
+            $this->objectManager->remove($course);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Course (id) : ".$id." has been deleted !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     // TODO : Result (All, Create, Show, Edit, Delete)
