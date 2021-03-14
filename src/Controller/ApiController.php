@@ -866,7 +866,20 @@ class ApiController extends AbstractController
      */
     public function allTeachers(): Response
     {
-        // TODO
+        $teachers = $this->teacherRepository->findAll();
+        if (!empty($teachers)) {
+            foreach ($teachers as $teacher) {
+                $collection[] = array(
+                    "id" => $teacher->getId(),
+                    "firstname" => $teacher->getFirstname(),
+                    "lastname" => $teacher->getLastname(),
+                    "entry_date" => $teacher->getEntryDate()
+                );
+            }
+            return $this->returnResponse($collection);
+        } else {
+            return $this->returnBad("teacher");
+        }
     }
 
     /**
@@ -876,7 +889,16 @@ class ApiController extends AbstractController
      */
     public function createTeacher(Request $request): Response
     {
-        // TODO
+        $teacher = new Teacher();
+        $teacher->setFirstname($request->request->get("firstname"));
+        $teacher->setLastname($request->request->get("lastname"));
+        $teacher->setEntryDate(new \DateTime('now'));
+        $this->objectManager->persist($teacher);
+        $this->objectManager->flush();
+        $collection = array(
+            "msg" => "Teacher has been created !"
+        );
+        return $this->returnResponse($collection);
     }
 
     /**
@@ -886,7 +908,18 @@ class ApiController extends AbstractController
      */
     public function showTeacher($id): Response
     {
-        // TODO
+        $teacher = $this->teacherRepository->find($id);
+        if (!$teacher instanceof Teacher) {
+            $this->returnBad("teacher");
+        } else {
+            $collection = array(
+                "id" => $teacher->getId(),
+                "firstname" => $teacher->getFirstname(),
+                "lastname" => $teacher->getLastname(),
+                "entry_date" => $teacher->getEntryDate()
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -897,7 +930,26 @@ class ApiController extends AbstractController
      */
     public function editTeacher($id, Request $request): Response
     {
-        // TODO
+        $teacher = $this->teacherRepository->find($id);
+        if (!$teacher instanceof Teacher) {
+            $this->returnBad("teacher");
+        } else {
+            if ($request->request->get("firstname")) {
+                $teacher->setFirstname($request->request->get("firstname"));
+            }
+            if ($request->request->get("lastname")) {
+                $teacher->setLastname($request->request->get("lastname"));
+            }
+            if ($request->request->get("entry_date")) {
+                $teacher->setEntryDate(new \DateTime($request->request->get("entry_date")));
+            }
+            $this->objectManager->persist($teacher);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Teacher (id) : ".$id." has been edit !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -907,6 +959,16 @@ class ApiController extends AbstractController
      */
     public function deleteTeacher($id): Response
     {
-        // TODO
+        $teacher = $this->teacherRepository->find($id);
+        if (!$teacher instanceof Teacher) {
+            return $this->returnBad("teacher");
+        } else {
+            $this->objectManager->remove($teacher);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Teacher (id) : ".$id." has been deleted !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 }
