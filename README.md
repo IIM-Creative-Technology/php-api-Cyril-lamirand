@@ -3,7 +3,7 @@
 ## Env & Dependencies
 🔸 <b>Doctrine/orm</b> : 2.8<br>
 🔹 <b>Doctrine/Fixtures-Bundle</b> : 3.4<br>
-🔸<b>Firebase/jwt-php</b> : 5.2<br>
+🔸 <b>Firebase/jwt-php</b> : 5.2<br>
 ## Installation
 ```
 git clone https://github.com/IIM-Creative-Technology/php-api-Cyril-lamirand.git

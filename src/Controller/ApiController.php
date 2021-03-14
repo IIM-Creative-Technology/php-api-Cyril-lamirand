@@ -756,14 +756,33 @@ class ApiController extends AbstractController
         }
     }
 
-    // TODO : Result (All, Create, Show, Edit, Delete)
     /**
      * @Route("/results/", name="api_results", methods={"GET"})
      * @return Response
      */
     public function allResults(): Response
     {
-        // TODO
+        $results = $this->resultRepository->findAll();
+        if (!empty($results)) {
+            foreach ($results as $result) {
+                $collection[] = array(
+                    "id" => $result->getId(),
+                    "score" => $result->getScore(),
+                    "student" => [
+                        "id" => $result->getStudent()->getId(),
+                        "firstname" => $result->getStudent()->getFirstname(),
+                        "lastname" => $result->getStudent()->getLastname()
+                    ],
+                    "course" => [
+                        "id" => $result->getCourse()->getId(),
+                        "label" => $result->getCourse()->getLabel()
+                    ]
+                );
+            }
+            return $this->returnResponse($collection);
+        } else {
+            return $this->returnBad("result");
+        }
     }
 
     /**
@@ -773,7 +792,34 @@ class ApiController extends AbstractController
      */
     public function createResult(Request $request): Response
     {
-        // TODO
+        $studentR = $request->request->get("student");
+        $courseR = $request->request->get("course");
+        $student = $this->studentRepository->find($studentR);
+        $course = $this->courseRepository->find($courseR);
+        $score = (int) $request->request->get("score");
+        if ($score > 20) {
+            $collection = array(
+                "msg" => "Please, the value have to be between 0 and 20 !"
+            );
+            $this->returnResponse($collection);
+        }
+        if ($course instanceof Course && $student instanceof Student) {
+            $result = new Result();
+            $result->setScore($request->request->get("score"));
+            $result->setStudent($student);
+            $result->setCourse($course);
+            $this->objectManager->persist($result);
+            $this->objectManager->flush();
+            $collection = array(
+                // TODO : Show what you create !
+                "msg" => "Result Created !"
+            );
+            return $this->returnResponse($collection);
+        } elseif (!$student instanceof Student && $course instanceof Course) {
+            return $this->returnBad("student");
+        } elseif ($student instanceof Student && !$course instanceof Course) {
+            return $this->returnBad("course");
+        }
     }
 
     /**
@@ -783,7 +829,34 @@ class ApiController extends AbstractController
      */
     public function showResult($id): Response
     {
-        // TODO
+        $result = $this->resultRepository->find($id);
+        if (!$result instanceof Result) {
+            $this->returnBad("result");
+        } else {
+            $collection = array(
+                "id"    => $result->getId(),
+                "score" => $result->getScore(),
+                "student" => [
+                    "id" => $result->getStudent()->getId(),
+                    "firstname" => $result->getStudent()->getFirstname(),
+                    "lastname" => $result->getStudent()->getLastname(),
+                    "classroom" => [
+                        "id" => $result->getStudent()->getClassroom()->getId(),
+                        "label" => $result->getStudent()->getClassroom()->getLabel()
+                    ]
+                ],
+                "course" => [
+                    "id" => $result->getCourse()->getId(),
+                    "label" => $result->getCourse()->getLabel(),
+                    "teacher" => [
+                        "id" => $result->getCourse()->getTeacher()->getId(),
+                        "firstname" => $result->getCourse()->getTeacher()->getFirstname(),
+                        "lastname" => $result->getCourse()->getTeacher()->getLastname()
+                    ]
+                ]
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -794,7 +867,38 @@ class ApiController extends AbstractController
      */
     public function editResult($id, Request $request): Response
     {
-        // TODO
+        $result = $this->resultRepository->find($id);
+        if (!$result instanceof Result) {
+            $this->returnBad("result");
+        } else {
+            if ($request->request->get("score")) {
+                $result->setScore($request->request->get("score"));
+            }
+            if ($request->request->get("student")) {
+                $studentId = $request->request->get("student");
+                $student = $this->studentRepository->find($studentId);
+                if ($student instanceof Student) {
+                    $result->setStudent($student);
+                } else {
+                    return $this->returnBad("student");
+                }
+            }
+            if ($request->request->get("course")) {
+                $courseId = $request->request->get("course");
+                $course = $this->courseRepository->find($courseId);
+                if ($course instanceof Course) {
+                    $result->setCourse($course);
+                } else {
+                    return $this->returnBad("course");
+                }
+            }
+            $this->objectManager->persist($result);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Result (id) : ".$id." has been edited !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
@@ -804,7 +908,17 @@ class ApiController extends AbstractController
      */
     public function deleteResult($id): Response
     {
-        // TODO
+        $result = $this->resultRepository->find($id);
+        if (!$result instanceof Result) {
+            return $this->returnBad("result");
+        } else {
+            $this->objectManager->remove($result);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Result (id) : ".$id." has been deleted !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     // TODO : Student (All, Create, Show, Edit, Delete)
@@ -855,7 +969,17 @@ class ApiController extends AbstractController
      */
     public function deleteStudent($id): Response
     {
-        // TODO
+        $student = $this->studentRepository->find($id);
+        if (!$student instanceof Student) {
+            return $this->returnBad("student");
+        } else {
+            $this->objectManager->remove($student);
+            $this->objectManager->flush();
+            $collection = array(
+                "msg" => "Student (id) : ".$id." has been deleted !"
+            );
+            return $this->returnResponse($collection);
+        }
     }
 
     /**
