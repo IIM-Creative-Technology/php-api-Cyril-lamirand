@@ -1,10 +1,10 @@
 # Symfony API Project - A3
 
 ## Env & Dependencies 
-* 🔹 <b>PHP</b> >= 7.2.5
-* 🔸 <b>Doctrine/orm</b> : 2.8
-* 🔸 <b>Doctrine/Fixtures-Bundle</b> : 3.4
-* 🔹 <b>Firebase/jwt-php</b> : 5.2
+🔹 <b>PHP</b> >= 7.2.5
+🔸 <b>Doctrine/orm</b> : 2.8
+🔸 <b>Doctrine/Fixtures-Bundle</b> : 3.4
+🔹 <b>Firebase/jwt-php</b> : 5.2
 ## Installation
 ```
 git clone https://github.com/IIM-Creative-Technology/php-api-Cyril-lamirand.git
