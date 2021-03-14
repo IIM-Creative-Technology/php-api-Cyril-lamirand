@@ -1,10 +1,9 @@
 # Symfony API Project - A3
 
-## Env & Dependencies 
-🔹 <b>PHP</b> >= 7.2.5<br>
+## Env & Dependencies
 🔸 <b>Doctrine/orm</b> : 2.8<br>
-🔸 <b>Doctrine/Fixtures-Bundle</b> : 3.4<br>
-🔹 <b>Firebase/jwt-php</b> : 5.2<br>
+🔹 <b>Doctrine/Fixtures-Bundle</b> : 3.4<br>
+🔸<b>Firebase/jwt-php</b> : 5.2<br>
 ## Installation
 ```
 git clone https://github.com/IIM-Creative-Technology/php-api-Cyril-lamirand.git
@@ -16,13 +15,16 @@ cd Path/to/my/project/php-api-Cyril-lamirand
 ```
 composer install
 ```
-You have to configure the file .env with your specs (line 30) !
+You have to configure the file <b>.env</b> with your environment (line 30) !
 ```
 DATABASE_URL="mysql://root:@127.0.0.1:3306/symfony_api_rendu?serverVersion=5.7"
 ```
 Then :
 ```
 php bin/console doctrine:database:create
+```
+```
+php bin/console doctrine:migrations:migrate
 ```
 ```
 php bin/console doctrine:fixtures:load
