@@ -51,7 +51,7 @@ http://127.0.0.1:8000/api/test
 <i>Of course, you have to do every test with <a href="https://www.postman.com/">Postman App</a> !</i>
 
 ## All the Routes
-### Classroom
+### ➡️Classroom
 * 🟢 (GET) : <b>/api/classrooms</b>
 * 🟠 (POST) : <b>/api/classroom/new</b>
 * 🟢 (GET) : <b>/api/classroom/{id}</b>
@@ -60,7 +60,7 @@ http://127.0.0.1:8000/api/test
 
 Parameters : <i><b>label</b> : String, <b>promotion</b> : Entity</i>
 
-### Course
+### ➡️Course
 * 🟢 (GET) : <b>/api/courses</b>
 * 🟠 (POST) : <b>/api/course/new</b>
 * 🟢 (GET) : <b>/api/course/{id}</b>
@@ -69,7 +69,7 @@ Parameters : <i><b>label</b> : String, <b>promotion</b> : Entity</i>
 
 Parameters : <i><b>label</b> : String, <b>promotion</b> : Entity, <b>classroom</b>: Entity, <b>teacher</b> : Entity, <b>start</b> : DateTime, <b>end</b> : DateTime</i>
 
-### Promotion
+### ➡️Promotion
 * 🟢 (GET) : <b>/api/promotions</b>
 * 🟠 (POST) : <b>/api/promotion/new</b>
 * 🟢 (GET) : <b>/api/promotion/{id}</b>
@@ -78,7 +78,7 @@ Parameters : <i><b>label</b> : String, <b>promotion</b> : Entity, <b>classroom</
 
 Parameters : <i><b>start</b> : String, <b>end</b> : String</i>
 
-### Student
+### ➡️Student
 * 🟢 (GET) : <b>/api/students</b>
 * 🟠 (POST) : <b>/api/student/new</b>
 * 🟢 (GET) : <b>/api/student/{id}</b>
@@ -87,7 +87,7 @@ Parameters : <i><b>start</b> : String, <b>end</b> : String</i>
 
 Parameters : <i><b>firstname</b> : String, <b>lastname</b> : String, <b>age</b> : Integer, <b>entry_date</b> : DateTime, <b>promotion</b> : Entity, <b>classroom</b> : Entity</i>
 
-### Teacher
+### ➡️Teacher
 * 🟢 (GET) : <b>/api/teachers</b>
 * 🟠 (POST) : <b>/api/teacher/new</b>
 * 🟢 (GET) : <b>/api/teacher/{id}</b>
@@ -96,7 +96,7 @@ Parameters : <i><b>firstname</b> : String, <b>lastname</b> : String, <b>age</b> 
 
 Parameters : <i><b>firstname</b> : String, <b>lastname</b> : String, <b>entry_date</b> : DateTime</i>
 
-### Result
+### ➡️Result
 * 🟢 (GET) : <b>/api/results</b>
 * 🟠 (POST) : <b>/api/result/new</b>
 * 🟢 (GET) : <b>/api/result/{id}</b>
