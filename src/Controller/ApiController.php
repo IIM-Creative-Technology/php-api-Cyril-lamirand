@@ -419,7 +419,7 @@ class ApiController extends AbstractController
             $this->objectManager->persist($classroom);
             $this->objectManager->flush();
             $collection = array(
-                "msg" => "Classroom edit : Succeed !"
+                "msg" => "Classroom (id) : ".$id." has been edited !"
             );
             return $this->returnResponse($collection);
         }
@@ -541,7 +541,7 @@ class ApiController extends AbstractController
             $this->objectManager->persist($promotion);
             $this->objectManager->flush();
             $collection = array(
-                "msg" => "Promotion edit : Succeed !"
+                "msg" => "Promotion (id) : ".$id." has been edited !"
             );
             return $this->returnResponse($collection);
         }
@@ -730,11 +730,10 @@ class ApiController extends AbstractController
             $this->objectManager->persist($course);
             $this->objectManager->flush();
             $collection = array(
-                "msg" => "Course edit : Succeed !"
+                "msg" => "Course (id) : ".$id." has been edited !"
             );
             return $this->returnResponse($collection);
         }
-
     }
 
     /**
@@ -859,7 +858,6 @@ class ApiController extends AbstractController
         // TODO
     }
 
-    // TODO : Teacher (All, Create, Show, Edit, Delete)
     /**
      * @Route("/teachers/", name="api_teachers", methods={"GET"})
      * @return Response
@@ -881,7 +879,6 @@ class ApiController extends AbstractController
             return $this->returnBad("teacher");
         }
     }
-
     /**
      * @Route("/teacher/new", name="api_teacher_new", methods={"POST"})
      * @param Request $request
@@ -900,7 +897,6 @@ class ApiController extends AbstractController
         );
         return $this->returnResponse($collection);
     }
-
     /**
      * @Route("/teacher/{id}", name="api_teacher_show", methods={"GET"})
      * @param $id
@@ -912,6 +908,7 @@ class ApiController extends AbstractController
         if (!$teacher instanceof Teacher) {
             $this->returnBad("teacher");
         } else {
+            // TODO : Bonus => Afficher les cours du professeur.
             $collection = array(
                 "id" => $teacher->getId(),
                 "firstname" => $teacher->getFirstname(),
@@ -921,7 +918,6 @@ class ApiController extends AbstractController
             return $this->returnResponse($collection);
         }
     }
-
     /**
      * @Route("/teacher/{id}", name="api_teacher_edit", methods={"PUT"})
      * @param $id
@@ -946,12 +942,11 @@ class ApiController extends AbstractController
             $this->objectManager->persist($teacher);
             $this->objectManager->flush();
             $collection = array(
-                "msg" => "Teacher (id) : ".$id." has been edit !"
+                "msg" => "Teacher (id) : ".$id." has been edited !"
             );
             return $this->returnResponse($collection);
         }
     }
-
     /**
      * @Route("/teacher/{id}", name="api_teacher_delete", methods={"DELETE"})
      * @param $id
