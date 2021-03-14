@@ -256,7 +256,7 @@ class ApiController extends AbstractController
                     }
                     $collection = array(
                         "msg" => $msg,
-                        "results_available" => $arrayStudents
+                        "students_available" => $arrayStudents
                     );
                     return $this->returnResponse($collection);
                 } else {
@@ -281,7 +281,7 @@ class ApiController extends AbstractController
                     }
                     $collection = array(
                         "msg" => $msg,
-                        "results_available" => $arrayTeachers
+                        "teachers_available" => $arrayTeachers
                     );
                     return $this->returnResponse($collection);
                 } else {
@@ -968,7 +968,7 @@ class ApiController extends AbstractController
             $this->objectManager->flush();
             $collection = array(
                 // TODO : Show what you create !
-                "msg" => "Result Created !"
+                "msg" => "Student Created !"
             );
             return $this->returnResponse($collection);
         } elseif (!$promotion instanceof Promotion && $classroom instanceof Classroom) {
